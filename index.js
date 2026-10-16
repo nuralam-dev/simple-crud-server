@@ -14,9 +14,28 @@ app.use(express.json());
 const client = new MongoClient(
   `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.37pyayk.mongodb.net/`,
 );
+export async function connectToMongoDB() {
+  try {
+    await client.connect();
+    console.log("You successfully connected to MongoDB!");
+    return client;
+  } catch (error) {
+    console.dir(error);
+  }
+}
+// connect database
+const connectedClient = await connectToMongoDB();
+const db = connectedClient.db("simplecruddb");
+const users = db.collection("user");
 
 app.get("/", (req, res) => {
   res.send("hello world");
+});
+// for all users
+app.get("/user", async (req, res) => {
+  const cursor = users.find({});
+  const allUser = await cursor.toArray();
+  res.send(allUser);
 });
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
