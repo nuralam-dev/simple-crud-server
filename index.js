@@ -1,7 +1,7 @@
 import cors from "cors";
 import "dotenv/config";
 import express from "express";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -36,6 +36,15 @@ app.get("/user", async (req, res) => {
   const cursor = users.find({});
   const allUser = await cursor.toArray();
   res.send(allUser);
+});
+
+// dynamic Id
+app.get("/users/:id", async (req, res) => {
+  console.log("params in the sever", req.params);
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const result = await users.findOne(query);
+  res.send(result);
 });
 // post data
 app.post("/user", async (req, res) => {
